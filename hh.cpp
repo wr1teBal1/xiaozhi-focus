@@ -12,4 +12,6 @@ int main() {
         ans += a[i];
     }
     cout << ans << endl;
+    int x;
+    std::cout<<x<<std::endl;
 }
