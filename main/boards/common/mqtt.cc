@@ -1,8 +1,3 @@
-/*
-    ESP-SparkBot 的底座
-    https://gitee.com/esp-friends/esp_sparkbot/tree/master/example/tank/c2_tracked_chassis
-*/
-
 #include <driver/gpio.h>
 #include <driver/uart.h>
 #include <esp_log.h>
@@ -22,7 +17,6 @@ namespace iot {
 
 class DuMqtt : public Thing {
  private:
-  light_mode_t light_mode_ = LIGHT_MODE_ALWAYS_ON;
   esp_mqtt_client_handle_t client;
   bool mqtt_connected = false;
 
@@ -33,7 +27,7 @@ class DuMqtt : public Thing {
       return;
     }
 
-    const char* topic = "robot/control";  // 替换成你需要发布消息的主题
+    const char* topic = "iot/control/jmk/lamp";  // MQTT主题，用于区分不同设备
     int msg_id = esp_mqtt_client_publish(client, topic, message.c_str(), 0, 1,
                                          0);  // 发布消息
     ESP_LOGI(TAG, "Message sent, msg_id: %d", msg_id);
@@ -90,59 +84,21 @@ class DuMqtt : public Thing {
   }
 
  public:
-  DuMqtt()
-      : Thing("DuMqtt", "小机器人的底座：有履带可以移动；可以调整灯光效果"),
-        light_mode_(LIGHT_MODE_ALWAYS_ON) {
+  Lamp()
+      : Thing("Lamp", "可以控制房间灯光开关") {
     mqtt_app_start();
-    // 定义设备的属性
-    properties_.AddNumberProperty(
-        "light_mode", "灯光效果编号", [this]() -> int {
-          return (light_mode_ - 2 <= 0) ? 1 : light_mode_ - 2;
-        });
-
-    // 定义设备可以被远程执行的指令
-    // methods_.AddMethod("GoForward", "向前走", ParameterList(),
-    //                    [this](const ParameterList& parameters) {
-    //                      SendMqttMessage("x0.0 y1.0");
-    //                    });
-
-    // methods_.AddMethod("GoBack", "向后退", ParameterList(),
-    //                    [this](const ParameterList& parameters) {
-    //                      SendMqttMessage("x0.0 y-1.0");
-    //                    });
-
-    // methods_.AddMethod("TurnLeft", "向左转", ParameterList(),
-    //                    [this](const ParameterList& parameters) {
-    //                      SendMqttMessage("x-1.0 y0.0");
-    //                    });
-
-    // methods_.AddMethod("TurnRight", "向右转", ParameterList(),
-    //                    [this](const ParameterList& parameters) {
-    //                      SendMqttMessage("x1.0 y0.0");
-    //                    });
-
-    // methods_.AddMethod("Dance", "跳舞", ParameterList(),
-    //                    [this](const ParameterList& parameters) {
-    //                      SendMqttMessage("d1");
-    //                      light_mode_ = LIGHT_MODE_MAX;
-    //                    });
-
-
+    // 定义设备的方法
     methods_.AddMethod(
-        "SwitchLightMode", "打开灯",
+        "SwitchLight", "开关灯",
         ParameterList(
-            {Parameter("lightmode", "1到6之间的整数", kValueTypeNumber, true)}),
+            {Parameter("state", "true为开灯，false为关灯", kValueTypeBoolean, true)}),
         [this](const ParameterList& parameters) {
-          char command_str[5] = {'w', 0, 0};
-          char mode = static_cast<char>(parameters["lightmode"].number()) + 2;
-
-          ESP_LOGI(TAG, "Input Light Mode: %c", (mode + '0'));
-
-          if (mode >= 3 && mode <= 8) {
-            command_str[1] = mode + '0';
-            SendMqttMessage(command_str);
-          }
+          bool is_on = parameters["state"].boolean();
+          char command_str[5] = {'w', is_on ? '1' : '0', 0};
+          ESP_LOGI(TAG, "Switch Light: %s", is_on ? "ON" : "OFF");
+          SendMqttMessage(command_str);
         });
+
   }
 };
 

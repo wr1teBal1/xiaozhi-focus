@@ -56,26 +56,27 @@ public:
         });
 
         // 定义设备可以被远程执行的指令
-        methods_.AddMethod("GoForward", "向前走", ParameterList(), [this](const ParameterList& parameters) {
-            SendUartMessage("x0.0 y1.0");
-        });
+        // methods_.AddMethod("GoForward", "向前走", ParameterList(), [this](const ParameterList& parameters) {
+        //     SendUartMessage("x0.0 y1.0");
+        // });
 
-        methods_.AddMethod("GoBack", "向后退", ParameterList(), [this](const ParameterList& parameters) {
-            SendUartMessage("x0.0 y-1.0");
-        });
+        // methods_.AddMethod("GoBack", "向后退", ParameterList(), [this](const ParameterList& parameters) {
+        //     SendUartMessage("x0.0 y-1.0");
+        // });
 
-        methods_.AddMethod("TurnLeft", "向左转", ParameterList(), [this](const ParameterList& parameters) {
-            SendUartMessage("x-1.0 y0.0");
-        });
+        // methods_.AddMethod("TurnLeft", "向左转", ParameterList(), [this](const ParameterList& parameters) {
+        //     SendUartMessage("x-1.0 y0.0");
+        // });
 
-        methods_.AddMethod("TurnRight", "向右转", ParameterList(), [this](const ParameterList& parameters) {
-            SendUartMessage("x1.0 y0.0");
-        });
+        // methods_.AddMethod("TurnRight", "向右转", ParameterList(), [this](const ParameterList& parameters) {
+        //     SendUartMessage("x1.0 y0.0");
+        // });
 
-        methods_.AddMethod("Dance", "跳舞", ParameterList(), [this](const ParameterList& parameters) {
-            SendUartMessage("d1");
-            light_mode_ = LIGHT_MODE_MAX;
-        });
+        // methods_.AddMethod("Dance", "跳舞", ParameterList(), [this](const ParameterList& parameters) {
+        //     SendUartMessage("d1");
+        //     light_mode_ = LIGHT_MODE_MAX;
+        // });
+
 
         methods_.AddMethod("SwitchLightMode", "打开灯", ParameterList({
             Parameter("lightmode", "1到6之间的整数", kValueTypeNumber, true)
